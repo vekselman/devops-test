@@ -1,0 +1,3 @@
+FROM wangxian/alpine-mysql
+EXPOSE 3302:3306
+VOLUME logicalVoloume01:/app
