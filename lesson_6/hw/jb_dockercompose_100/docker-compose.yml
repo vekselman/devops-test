@@ -9,26 +9,32 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./artifactsa:/code
+#      - ./web:/code
+      - ../../../../seminars/docker/playground/labs/labdockercompose/roles/web:/code
     networks: # Define netwroks per service / role
       - app_layer
+      - db_layer
     entrypoint: ## this wil overide the CMD / entrypoint in our dockerfile
       - java
       - -jar
       - -Dspring.profiles.active=mysql
       - /code/spring-music.jar
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db_mysql:3306/music
 
   db_mysql:
     image: wangxian/alpine-mysql
     environment: # env variables
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_DATABASE=music
+      - MYSQL_ROOT_PASSWORD=rootroot
     ports:
       - 3306:3306
     networks:
       - db_layer
     volumes:
       - logicalVoloume01:/app
+      - .:/run/mysqld/
 
   # this will replace:
   #docker run --rm -itd --network db_layer  --name db_mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=music -p 3306:3306 -v $(pwd):/app wangxian/alpine-mysql
