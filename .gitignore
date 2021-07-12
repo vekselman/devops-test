@@ -1,1 +1,9 @@
 .idea
+.gitignore
+Makefile
+README.md
+library-schema.sql
+pylint.cfg
+requirements.txt
+run_app.py
+tests.py
