@@ -1,7 +1,43 @@
-FROM 127.0.0.1.nip.io/development/python:latest
+FROM 127.0.0.1.nip.io/ci/python:latest as builder
+# PYTHONUNBUFFERED Force logging to stdout / stderr not to be buffered into ram
+ENV PYTHONUNBUFFERED=1
 WORKDIR /usr/src/app
 COPY flask-api/ ./
-RUN pip install -r requirements.txt
-# Running Unit TESTS
-RUN ["make", "test"] # Becouse we need make we cant use the python slim
+WORKDIR /wheels
+COPY flask-api/requirements.txt ./requirements.txt
+# PIP Will create an archive of our libraries so we don't need to download them again
+# argument - wheel
+RUN pip wheel -r ./requirements.txt
+
+
+FROM 127.0.0.1.nip.io/ci/pylint:latest as linting
+WORKDIR /code
+COPY --from=builder /usr/src/app/pylint.cfg /etc/pylint.cfg
+COPY --from=builder /usr/src/app/*.py ./
+COPY --from=builder /usr/src/app/api ./api
+RUN ["/docker-entrypoint.sh", "pylint"]
+
+FROM 127.0.0.1.nip.io/ci/sonar-scanner:latest as sonarqube
+
+WORKDIR /usr/src
+COPY ./sonar-runner.properties /usr/lib/sonar-scanner/conf/sonar-scanner.properties
+COPY --from=builder /usr/src/app/*.py ./
+COPY --from=builder /usr/src/app/api ./api
+RUN sonar-scanner -Dsonar.projectBaseDir=/usr/src
+
+
+# Starts and Serves Web Page
+# Phase VI
+FROM 127.0.0.1.nip.io/ci/python:slim as serve
+WORKDIR /usr/src/app
+# Copy all packages instead of rerunning pip install
+COPY --from=builder /wheels /wheels
+RUN     pip install -r /wheels/requirements.txt \
+                      -f /wheels \
+       && rm -rf /wheels \
+       && rm -rf /root/.cache/pip/*
+
+COPY --from=builder /usr/src/app/*.py ./
+COPY --from=builder /usr/src/app/api ./api
 CMD ["python", "run_app.py"]
+
