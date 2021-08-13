@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  flask-api:
+    image: 127.0.0.1.nip.io/production/flask-api:0.1
+    ports:
+    - 0.0.0.0:8080:8080
+    networks:
+      - flask
+
+networks:
+  flask:
