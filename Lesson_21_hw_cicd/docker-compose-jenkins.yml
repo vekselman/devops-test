@@ -25,6 +25,7 @@ services:
 
   sonarqube:
     image: sonarqube
+    container_name: sonarqube
     restart: unless-stopped
     ports:
       - 0.0.0.0:9000:9000
@@ -34,6 +35,7 @@ services:
   nexus:
     image: sonatype/nexus3
     restart: unless-stopped
+    container_name: nexus
     volumes:
       - ./volume/nexus/data:/nexus-data
     environment:
