@@ -4,9 +4,8 @@ services:
     build: ./jenkins/master
     image: jenkins-jb/master:1.0
     container_name: jenkins
-    ports:
-      - '8080:8080'
-      - '50000:50000'
+#    ports:
+#      - "8080:8080"
     networks:
       - jb
   jenkins-slave:
@@ -24,17 +23,40 @@ services:
     depends_on:
       - jenkins
 
+  sonarqube:
+    image: sonarqube
+    restart: unless-stopped
+    ports:
+      - 0.0.0.0:9000:9000
+      - 0.0.0.0:9092:9092
+    networks:
+      - jb
+  nexus:
+    image: sonatype/nexus3
+    restart: unless-stopped
+    volumes:
+      - ./volume/nexus/data:/nexus-data
+    environment:
+      - NEXUS_CONTEXT=nexus
+    user: root
+    networks:
+      - jb
+
   nginx:
     image: nginx:latest
+    container_name: nginx
     ports:
       - "443:443"
+      - "80:80"
+      - "5000:5000"
     volumes:
-      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - /home/leonid/cert.crt:/etc/nginx/ssl/cert.crt:ro
-      - /home/leonid/cert.key:/etc/nginx/ssl/cert.key:ro
-    restart: always
-    depends_on:
-      - jenkins
+      - ./etc/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./etc/nginx/proxy-settings.conf:/etc/nginx/conf.d/proxy-settings.conf:ro
+      - ./etc/nginx/options-ssl-nginx.conf:/etc/certificates/options-ssl-nginx.conf:ro
+      - /home/leonid/devopsstudy.nip.io.crt:/etc/certificates/devopsstudy.nip.io.crt:ro
+      - /home/leonid/devopsstudy.nip.io:/etc/certificates/devopsstudy.nip.io:ro
+    restart: unless-stopped
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     networks:
       - jb
 

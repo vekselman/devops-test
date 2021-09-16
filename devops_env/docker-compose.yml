@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    volumes:
+      - ./configuration/nginx/nexus.conf:/etc/nginx/conf.d/nexus.conf
+      - ./configuration/nginx/certs:/etc/certificates
+    ports:
+      - "80:80"
+      - "443:443"
+      - "5000:5000"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - nexus
+
+  sonarqube:
+    image: sonarqube
+    restart: unless-stopped
+    ports:
+      - 0.0.0.0:9000:9000
+      - 0.0.0.0:9092:9092
+    networks:
+      - nexus
+  nexus:
+    image: sonatype/nexus3
+    restart: unless-stopped
+    volumes:
+      - ./volume/nexus/data:/nexus-data
+    environment:
+      - NEXUS_CONTEXT=nexus
+    user: root
+    networks:
+      - nexus
+
+  jenkins:
+    image:
+
+
+networks:
+  nexus:
