@@ -2,8 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
-    nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
+#    nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+#    nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
     nginx.ingress.kubernetes.io/rewrite-target: /$2 # We strip the prefix before it passes to our backend or our app wont load as it will get route /bears instead /
   name: external-auth-oauth2
   namespace: animals
@@ -15,15 +15,17 @@ spec:
       http:
         paths:
           - path: /moose(|$)(.*)
+#          - path: /moose
             pathType: Exact
+#            pathType: Prefix
             backend:
               service:
                 name: moose-svc
                 port:
                   number: 80
-  tls:
-    - hosts:
-        - 54.216.243.124.nip.io
+#  tls:
+#    - hosts:
+#        - 54.216.243.124.nip.io
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -44,5 +46,6 @@ spec:
             path: /oauth2
             pathType: Prefix
   tls:
-    - hosts:
+    - secretName: tls-secret
+      hosts:
         - 54.216.243.124.nip.io
