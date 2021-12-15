@@ -5,7 +5,7 @@ metadata:
   labels:
     k8s-app: oauth2-proxy
   name: oauth2-proxy
-  namespace: kube-system
+  namespace: animals
 spec:
   replicas: 1
   selector:
@@ -31,7 +31,7 @@ spec:
               value: 7d9ec92c439a32717c6b551a3d27aab8a2af2390
             # docker run -ti --rm python:3-alpine python -c 'import secrets,base64; print(base64.b64encode(base64.b64encode(secrets.token_bytes(16))));'
             - name: OAUTH2_PROXY_COOKIE_SECRET
-              value: RGpjU1RuOHlMRkkzRjVoeWQzemtwUT09
+              value: d21veXVxY1N2QzFDMWtsS25NOEhGUT09
           image: quay.io/oauth2-proxy/oauth2-proxy:latest
           imagePullPolicy: Always
           name: oauth2-proxy
@@ -47,7 +47,7 @@ metadata:
   labels:
     k8s-app: oauth2-proxy
   name: oauth2-proxy
-  namespace: kube-system
+  namespace: animals
 spec:
   ports:
     - name: http
