@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-argocd
+  namespace: argocd
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: leonid.vekselman@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-staging-http01-key-pair
+    solvers:
+      - http01:
+          ingress:
+            class: nginx

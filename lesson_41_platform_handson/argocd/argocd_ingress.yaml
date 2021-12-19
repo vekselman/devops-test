@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+#  annotations:
+#    cert-manager.io/cluster-issuer: "selfsigned"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: argocd.hsh.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: http
+  tls:
+    - hosts:
+        - argocd.hsh.com
+#      secretName: selfsigned-certificate
