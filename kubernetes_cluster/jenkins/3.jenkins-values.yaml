@@ -238,7 +238,7 @@ controller:
     - kubernetes:1.30.11
     - workflow-aggregator:2.6
     - git:4.10.0
-    - configuration-as-code:1.54
+    - configuration-as-code:1.55
 
   # Set to false to download the minimum required version of all dependencies.
   installLatestPlugins: true
@@ -434,7 +434,7 @@ controller:
 #    apiVersion: "networking.k8s.io/v1"
     labels: {}
     annotations: {}
-#      kubernetes.io/ingress.class: "nginx"
+#      2
     # kubernetes.io/tls-acme: "true"
     # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
     # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
